@@ -50,9 +50,6 @@ def detectAndDisplay(frame):
             cv2.putText(frame, label, (x, y-5), font, 2, color, 2)
     cv2.imshow("Image", frame)
 
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
 
 
 # Load Yolo
