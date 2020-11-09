@@ -9,7 +9,9 @@ def detectAndDisplay(frame):
     height, width, channels = frame.shape
 
     # Detecting objects
-    blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False) # 416,416 픽셀단위로 만듬
+
+    # 데이터를 모델에 로드하는 작업
     net.setInput(blob)
     outs = net.forward(output_layers)
 
@@ -20,7 +22,7 @@ def detectAndDisplay(frame):
     for out in outs:
         for detection in out:
             scores = detection[5:]
-            class_id = np.argmax(scores)
+            class_id = np.argmax(scores) # 카테고리중 probility 큰값을 나타내는 것
             confidence = scores[class_id]
             if confidence > min_confidence:
                 # Object detected
@@ -31,11 +33,12 @@ def detectAndDisplay(frame):
                 # Rectangle coordinates
                 x = int(center_x - w / 2)
                 y = int(center_y - h / 2)
+
                 boxes.append([x, y, w, h])
                 confidences.append(float(confidence))
                 class_ids.append(class_id)
 
-    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+    indexes = cv2.dnn.NMSBoxes(boxes, confidences, min_confidence, 0.4) # 박스 노이즈를 없앰 non maximum suppression (NMS threshold:0.4)
     font = cv2.FONT_HERSHEY_PLAIN
     for i in range(len(boxes)):
         if i in indexes:
@@ -58,12 +61,9 @@ classes = []
 with open("D:\\PycharmProjects\\assignment\\work\\darknet\\data\\coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
 layer_names = net.getLayerNames()
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()] # (yolo작동방식)
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-# Loading image
-# img = cv2.imread("C:\\Users\\LG\\Desktop\\tensor\\1.jpg")
-# detectAndDisplay(img)
 
 #-- 2. Read the video stream
 cap = cv2.VideoCapture(file_name)
@@ -75,13 +75,11 @@ while True:
     if frame is None:
         print('--(!) No captured frame -- Break!')
         break
-    detectAndDisplay(frame)
+    detectAndDisplay(frame) # 영상을 하나한 frame단위로 실행
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF ==ord('q'):
         break
 
-
-# cv2.VideoWriter('C:\\Users\\LG\\Desktop\\work\\result.mp4',video,20.0, (640, 480))
 
 
 
