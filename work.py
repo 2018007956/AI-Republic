@@ -82,8 +82,3 @@ while True:
 
 
 # cv2.VideoWriter('C:\\Users\\LG\\Desktop\\work\\result.mp4',video,20.0, (640, 480))
-
-
-
-
-# https://pysource.com/2019/06/27/yolo-object-detection-using-opencv-with-python/
